@@ -153,22 +153,17 @@ function setupPythonEnvironment(config: Config): void {
     console.log('No Python environment specified, skipping setup');
   }
 }
-
 // Main function to orchestrate the setup process
 async function main() {
   try {
-    // Get the command and base directory from command line arguments
+    // Get the command from command line arguments
     const command = process.argv[2];
-    const baseDir = process.argv[3];
-
     if (!command || !['install', 'start'].includes(command)) {
       throw new Error('Please provide a valid command: "install" or "start"');
     }
 
-    if (!baseDir) {
-      throw new Error('Please provide a directory as a command line argument.');
-    }
-
+    // Set baseDir to the provided argument or the current working directory
+    const baseDir = process.argv[3] || process.cwd();
     if (!fs.existsSync(baseDir)) {
       throw new Error(`Specified directory does not exist: ${baseDir}`);
     }
@@ -183,7 +178,6 @@ async function main() {
         initializeRepo(config);
         setupPythonEnvironment(config);
       }
-
       // Run all setup scripts defined in the configuration
       for (const setupScript of config.scripts.setup) {
         runScript(setupScript, config, env, baseDir);
